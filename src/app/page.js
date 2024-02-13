@@ -13,7 +13,8 @@ export default function Main(){
                 {
                     id: input.length,
                     todo: e.target[0].value,
-                    done: false
+                    done: false,
+                    edit: false,
                 }
             ]
         );

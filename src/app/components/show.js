@@ -25,12 +25,33 @@ export function ShowDone({data}) {
 }
 
 export function ShowTodo({data, setData}){
-    const [edit, setEdit] = useState(false);
     const [originalValue, setOriginal] = useState('')
 
-    function handleEdit(todo){
+    function handleEdit(id, todo){
         setOriginal(todo)
-        setEdit(!edit)
+        setData(data.map((e) => {
+          if(e.id === id){
+            return {
+              ...e,
+              edit: true,
+            }
+          } else {
+            return e
+          }
+        }))
+    }
+
+    function handleCancel(id){
+      setData(data.map((e) => {
+        if(e.id === id){
+          return {
+            ...e,
+            edit: false,
+          }
+        } else {
+          return e;
+        }
+      }))
     }
 
     function saveChanges(choosenId){
@@ -39,11 +60,13 @@ export function ShowTodo({data, setData}){
                 return {
                     ...item,
                     todo: originalValue,
+                    edit: false,
                 }
+            } else {
+              return item
             }
         }))
-        setEdit(!edit)
-    }
+      }
 
     function deleteTodo(id){
         setData(data.filter((e) => e.id !== id));
@@ -71,17 +94,17 @@ return (
           .filter((e) => e?.done !== true)
           .map((item) => (
             <li key={item.id} className='w-full border-2 border-black p-4 mb-2 rounded'>
-              {edit ? (
+              {item.edit ? (
                 <form onSubmit={(e) => e.preventDefault()}>
                   <input type='text' value={originalValue} onChange={(e) => setOriginal(e.target.value)}/> 
                   <button onClick={() => saveChanges(item.id)}>Save</button>
-                  <button onClick={handleEdit}>Cancel</button>
+                  <button onClick={() => handleCancel(item.id)}>Cancel</button>
                 </form>
               ) : (
                 <div className='flex justify-between align-center'>
                   <div className='p-4'>{item?.id + 1}. {item?.todo}</div>
                   <div className='flex justify-evenly align-center'>
-                    <button className="p-4" onClick={() => handleEdit(item.todo)}>Edit</button> 
+                    <button className="p-4" onClick={() => handleEdit(item.id, item.todo)}>Edit</button> 
                     <button className="p-4" onClick={() => deleteTodo(item.id)}>Delete</button>
                     <button className="p-4" onClick={() => markAsDone(item.id)}>Done</button>
                   </div>
